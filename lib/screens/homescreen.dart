@@ -12,10 +12,12 @@ class _HomeScreenState extends State<HomeScreen> {
   bool onTitle = false;
   bool checked = false;
   bool textFieldOn = false;
-  String title = 'Title';
+  bool onTitleEdit = false;
+  String title = 'Todo';
   List<String> todo = ['Todo'];
   List<String> done = [];
   TextEditingController todoController = TextEditingController();
+  TextEditingController titleController = TextEditingController();
 
   void addToDone(String clearedToDo, int index) {
     done.add(clearedToDo);
@@ -55,22 +57,35 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           onTitle
               ? Text(title)
-              : Row(
-                  children: [
-                    Icon(
-                      Icons.edit,
-                      size: 16,
-                      color: Colors.grey,
-                    ),
-                    Text(
-                      'Title',
-                      style: TextStyle(
-                        fontStyle: FontStyle.italic,
+              : onTitleEdit?TextField(controller: titleController,onEditingComplete: (){
+                setState(() {
+                  onTitle = true;
+                  onTitleEdit = false;
+                  title = titleController.text;
+                });
+          },):InkWell(
+                onTap: (){
+                  setState(() {
+                    onTitleEdit = true;
+                  });
+                },
+                child: Row(
+                    children: [
+                      Icon(
+                        Icons.edit,
+                        size: 16,
                         color: Colors.grey,
                       ),
-                    )
-                  ],
-                ),
+                      Text(
+                        'Title',
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color: Colors.grey,
+                        ),
+                      )
+                    ],
+                  ),
+              ),
           textFieldOn
               ? TextField(
                   controller: todoController,
