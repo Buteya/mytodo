@@ -8,33 +8,31 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool onEdit = false;
-  bool onTitle = false;
-  bool checked = false;
-  bool textFieldOn = false;
-  bool onTitleEdit = false;
-  String title = 'Todo';
-  List<String> todo = ['Todo'];
-  List<String> done = [];
-  TextEditingController todoController = TextEditingController();
-  TextEditingController titleController = TextEditingController();
+  bool _onEdit = false;
+  bool _onTitle = false;
+  bool _checked = false;
+  bool _textFieldOn = false;
+  bool _onTitleEdit = false;
+  String _title = 'Todo';
+  final List<String> _todo = [];
+  final List<String> _done = [];
+  final TextEditingController _todoController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
 
-  void addToDone(String clearedToDo, int index) {
-    done.add(clearedToDo);
-    todo.removeAt(index);
+  void _addToDone(String clearedToDo, int index) {
+    _done.add(clearedToDo);
+    _todo.removeAt(index);
     setState(() {
-      checked = true;
+      _checked = true;
     });
-
-    print(index);
   }
 
-  void createToDo(String newTodo) {
-    todo.add(newTodo);
+  void _createToDo(String newTodo) {
+    _todo.add(newTodo);
   }
 
-  void deleteTodo(int index) {
-    todo.removeAt(index);
+  void _deleteTodo(int index) {
+    _todo.removeAt(index);
   }
 
 
@@ -43,9 +41,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton(
+        tooltip: 'Add a Todo',
         onPressed: () {
           setState(() {
-            textFieldOn = true;
+            _textFieldOn = true;
           });
         },
         child: Icon(Icons.add),
@@ -55,55 +54,67 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          onTitle
-              ? Text(title)
-              : onTitleEdit?TextField(controller: titleController,onEditingComplete: (){
-                setState(() {
-                  onTitle = true;
-                  onTitleEdit = false;
-                  title = titleController.text;
-                });
-          },):InkWell(
-                onTap: (){
+          _onTitle
+              ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(_title,style: TextStyle(fontSize: 20,fontWeight: FontWeight.w400,),),
+              )
+              : _onTitleEdit?Padding(
+                padding: const EdgeInsets.symmetric(horizontal:24.0,vertical: 8.0),
+                child: TextField(controller: _titleController,onEditingComplete: (){
                   setState(() {
-                    onTitleEdit = true;
+                    _onTitle = true;
+                    _onTitleEdit = false;
+                    _title = _titleController.text;
                   });
-                },
-                child: Row(
-                    children: [
-                      Icon(
-                        Icons.edit,
-                        size: 16,
-                        color: Colors.grey,
-                      ),
-                      Text(
-                        'Title',
-                        style: TextStyle(
-                          fontStyle: FontStyle.italic,
+                          },),
+              ):Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0,vertical: 8.0),
+            child: InkWell(
+                  onTap: (){
+                    setState(() {
+                      _onTitleEdit = true;
+                    });
+                  },
+                  child: Row(
+                      children: [
+                        Icon(
+                          Icons.edit,
+                          size: 16,
                           color: Colors.grey,
                         ),
-                      )
-                    ],
+                        Text(
+                          'Title',
+                          style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            color: Colors.grey,
+                          ),
+                        )
+                      ],
+                    ),
+                ),
+          ),
+          _textFieldOn
+              ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0,vertical: 8.0),
+                child: TextField(
+                    controller: _todoController,
+                    autofocus: true,
+                    onSubmitted: (value) {
+                      _createToDo(_todoController.text);
+                      setState(() {
+                        _textFieldOn = false;
+                      });
+                      _todoController.clear();
+                    },
                   ),
-              ),
-          textFieldOn
-              ? TextField(
-                  controller: todoController,
-                  autofocus: true,
-                  onSubmitted: (value) {
-                    createToDo(todoController.text);
-                    setState(() {
-                      textFieldOn = false;
-                    });
-                    todoController.clear();
-                  },
-                )
+              )
               : SizedBox(),
           Flexible(
             child: ListView.builder(
-              itemCount: todo.length,
+              itemCount: _todo.length,
               itemBuilder: (context, index) {
-                TextEditingController editTodo = TextEditingController(text:todo[index]);
+                TextEditingController editTodo = TextEditingController(text:_todo[index]);
                 return Dismissible(
                   key: Key(index.toString()),
                   background: Container(
@@ -116,31 +127,31 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   onDismissed: (direction) {
                     setState(() {
-                      deleteTodo(index);
+                      _deleteTodo(index);
                     });
                   },
                   child: ListTile(
                     leading: Checkbox(
                       value: false,
-                      onChanged: (checked) => addToDone(todo[index], index),
+                      onChanged: (checked) => _addToDone(_todo[index], index),
                     ),
-                    title: onEdit ? TextField(
+                    title: _onEdit ? TextField(
                       controller: editTodo,
                       onEditingComplete: (){
                         setState(() {
-                          todo[index] = editTodo.text;
-                          onEdit = false;
+                          _todo[index] = editTodo.text;
+                          _onEdit = false;
                         });
                       },
                     ) : InkWell(onTap:(){
                       setState(() {
-                        onEdit = true;
+                        _onEdit = true;
                       });
-                    },child: Text(todo[index])),
+                    },child: Text(_todo[index])),
                     trailing: IconButton(
                       onPressed: (){
                         setState(() {
-                          deleteTodo(index);
+                          _deleteTodo(index);
                         });
                       },
                       icon: Icon(Icons.delete),
@@ -152,19 +163,27 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Flexible(
             child: ListView.builder(
-                itemCount: done.length,
+                itemCount: _done.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: done[index],
-                            style: TextStyle(
-                              decoration: TextDecoration.lineThrough,
+                    title: InkWell(
+                      onTap: (){
+                        setState(() {
+                          _todo.add(_done[index]);
+                          _done.removeAt(index);
+                        });
+                      },
+                      child: Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: _done[index],
+                              style: TextStyle(
+                                decoration: TextDecoration.lineThrough,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   );
