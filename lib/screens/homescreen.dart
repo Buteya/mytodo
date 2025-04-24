@@ -35,7 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _todo.removeAt(index);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,48 +55,70 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           _onTitle
               ? Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(_title,style: TextStyle(fontSize: 20,fontWeight: FontWeight.w400,),),
-              )
-              : _onTitleEdit?Padding(
-                padding: const EdgeInsets.symmetric(horizontal:24.0,vertical: 8.0),
-                child: TextField(controller: _titleController,onEditingComplete: (){
-                  setState(() {
-                    _onTitle = true;
-                    _onTitleEdit = false;
-                    _title = _titleController.text;
-                  });
-                          },),
-              ):Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0,vertical: 8.0),
-            child: InkWell(
-                  onTap: (){
-                    setState(() {
-                      _onTitleEdit = true;
-                    });
-                  },
-                  child: Row(
-                      children: [
-                        Icon(
-                          Icons.edit,
-                          size: 16,
-                          color: Colors.grey,
-                        ),
-                        Text(
-                          'Title',
-                          style: TextStyle(
-                            fontStyle: FontStyle.italic,
-                            color: Colors.grey,
-                          ),
-                        )
-                      ],
+                  padding: const EdgeInsets.all(8.0),
+                  child: InkWell(
+                    onTap: (){
+                     setState(() {
+                       _onTitle = false;
+                       _onTitleEdit = true;
+                     });
+                    },
+                    child: Text(
+                      _title,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
-                ),
-          ),
+                  ),
+                )
+              : _onTitleEdit
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24.0, vertical: 8.0),
+                      child: TextField(
+                        controller: _titleController,
+                        onEditingComplete: () {
+                          setState(() {
+                            _onTitle = true;
+                            _onTitleEdit = false;
+                            _title = _titleController.text;
+                          });
+                        },
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24.0, vertical: 8.0),
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _onTitleEdit = true;
+                          });
+                        },
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.edit,
+                              size: 16,
+                              color: Colors.grey,
+                            ),
+                            Text(
+                              'Title',
+                              style: TextStyle(
+                                fontStyle: FontStyle.italic,
+                                color: Colors.grey,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
           _textFieldOn
               ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0,vertical: 8.0),
-                child: TextField(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 8.0),
+                  child: TextField(
                     controller: _todoController,
                     autofocus: true,
                     onSubmitted: (value) {
@@ -108,13 +129,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       _todoController.clear();
                     },
                   ),
-              )
+                )
               : SizedBox(),
           Flexible(
             child: ListView.builder(
               itemCount: _todo.length,
               itemBuilder: (context, index) {
-                TextEditingController editTodo = TextEditingController(text:_todo[index]);
+                TextEditingController editTodo =
+                    TextEditingController(text: _todo[index]);
                 return Dismissible(
                   key: Key(index.toString()),
                   background: Container(
@@ -135,21 +157,25 @@ class _HomeScreenState extends State<HomeScreen> {
                       value: false,
                       onChanged: (checked) => _addToDone(_todo[index], index),
                     ),
-                    title: _onEdit ? TextField(
-                      controller: editTodo,
-                      onEditingComplete: (){
-                        setState(() {
-                          _todo[index] = editTodo.text;
-                          _onEdit = false;
-                        });
-                      },
-                    ) : InkWell(onTap:(){
-                      setState(() {
-                        _onEdit = true;
-                      });
-                    },child: Text(_todo[index])),
+                    title: _onEdit
+                        ? TextField(
+                            controller: editTodo,
+                            onEditingComplete: () {
+                              setState(() {
+                                _todo[index] = editTodo.text;
+                                _onEdit = false;
+                              });
+                            },
+                          )
+                        : InkWell(
+                            onTap: () {
+                              setState(() {
+                                _onEdit = true;
+                              });
+                            },
+                            child: Text(_todo[index])),
                     trailing: IconButton(
-                      onPressed: (){
+                      onPressed: () {
                         setState(() {
                           _deleteTodo(index);
                         });
@@ -161,13 +187,20 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 8.0,
+            ),
+            child: Divider(),
+          ),
           Flexible(
             child: ListView.builder(
                 itemCount: _done.length,
                 itemBuilder: (context, index) {
                   return ListTile(
                     title: InkWell(
-                      onTap: (){
+                      onTap: () {
                         setState(() {
                           _todo.add(_done[index]);
                           _done.removeAt(index);
